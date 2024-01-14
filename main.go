@@ -24,5 +24,4 @@ func main() {
 	for {
 		time.Sleep(time.Hour)
 	}
-
 }
