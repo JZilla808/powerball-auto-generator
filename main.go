@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/JZilla808/powerball-auto-generator/internal/random"
 )
@@ -18,5 +19,10 @@ func main() {
 	// Start the scheduled random number generator
 	fmt.Println("Starting the random number generator...")
 	random.StartRandomNumberGenerator()
+
+	// Keep the program running
+	for {
+		time.Sleep(time.Hour)
+	}
 
 }

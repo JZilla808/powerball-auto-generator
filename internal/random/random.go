@@ -35,9 +35,13 @@ func StartRandomNumberGenerator() {
 		return
 	}
 
-	c.AddFunc("CRON_TZ=America/Los_Angeles 0 9 * * *", func() {
+	timeToRun := "CRON_TZ=America/Los_Angeles 0 9 * * *"
+	fmt.Printf("Job is scheduled to run at 9 AM every day in America/Los_Angeles timezone.\n")
+
+	c.AddFunc(timeToRun, func() {
 		generateAndCommit(location)
 	})
+
 	c.Start()
 }
 
