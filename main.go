@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/JZilla808/powerball-auto-generator/internal/random"
+)
 
 func main() {
 	// Test the random number generator
