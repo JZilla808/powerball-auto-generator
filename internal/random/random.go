@@ -16,6 +16,16 @@ type LotteryData struct {
 	RandomNumbers map[string]map[string][]int `json:"random_numbers"`
 }
 
+func StartRandomNumberGeneratorNow() {
+	location, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		fmt.Println("Error loading location:", err)
+		return
+	}
+
+	generateAndCommit(location)
+}
+
 // StartRandomNumberGenerator initializes and starts the lottery number generator
 func StartRandomNumberGenerator() {
 	c := cron.New()
@@ -35,8 +45,9 @@ func StartRandomNumberGenerator() {
 func generateAndCommit(location *time.Location) {
 	fmt.Println("Starting the lottery number generation process...")
 
-	// Generate a random number between 5 and 18
+	// Generate a random number between 5 and 18 as the number of commits to make
 	count := generateCount()
+	fmt.Printf("Generating %d commits...\n", count)
 
 	// Load or Initialize numbers.json
 	var data LotteryData
@@ -73,15 +84,16 @@ func generateAndCommit(location *time.Location) {
 		data.RandomNumbers[dateStr][timeStr] = lotteryNumbers
 
 		fmt.Printf("Generated numbers for %s at %s: %v\n", dateStr, timeStr, lotteryNumbers)
-	}
 
-	// Save the updated numbers.json
-	if err := saveNumbersJSON(&data); err != nil {
-		fmt.Println("Error saving numbers.json:", err)
-		return
-	}
+		// Save the updated numbers.json
+		if err := saveNumbersJSON(&data); err != nil {
+			fmt.Println("Error saving numbers.json:", err)
+			return
+		}
 
-	commitAndPush()
+		commitAndPush()
+		fmt.Printf("Commit %d of %d completed.\n", i+1, count)
+	}
 
 	fmt.Println("Lottery number generation and commit process completed.")
 }
@@ -137,6 +149,7 @@ func executeGitCommand(command ...string) error {
 
 // testGenerateAndCommit is a manual test function for generateAndCommit
 func TestGenerateAndCommit() {
+	fmt.Println("TestGenerateAndCommit Called...")
 	location, err := time.LoadLocation("America/Los_Angeles")
 	if err != nil {
 		fmt.Println("Error loading location:", err)
