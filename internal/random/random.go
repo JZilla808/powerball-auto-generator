@@ -35,12 +35,20 @@ func StartRandomNumberGenerator() {
 		return
 	}
 
-	timeToRun := "CRON_TZ=America/Los_Angeles 0 9 * * *"
-	fmt.Printf("Job is scheduled to run at 9 AM every day in America/Los_Angeles timezone.\n")
+	// Define multiple run times throughout the day
+	runTimes := []string{
+		"CRON_TZ=America/Los_Angeles 0 9 * * *",  // 9 AM
+		"CRON_TZ=America/Los_Angeles 0 13 * * *", // 1 PM
+		"CRON_TZ=America/Los_Angeles 0 17 * * *", // 5 PM
+		"CRON_TZ=America/Los_Angeles 0 21 * * *", // 9 PM
+	}
 
-	c.AddFunc(timeToRun, func() {
-		generateAndCommit(location)
-	})
+	for _, timeToRun := range runTimes {
+		fmt.Printf("Job is scheduled to run at %s every day in America/Los_Angeles timezone.\n", timeToRun)
+		c.AddFunc(timeToRun, func() {
+			generateAndCommit(location)
+		})
+	}
 
 	c.Start()
 }

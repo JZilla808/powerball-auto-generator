@@ -5,7 +5,7 @@ This project is a Go-based application that automatically generates and records 
 ## Features
 
 - Generates random Powerball lottery numbers (5 numbers from 1-69 and 1 Powerball number from 1-26)
-- Schedules number generation daily at 9 AM Pacific Time
+- Schedules number generation four times daily: 9 AM, 1 PM, 5 PM, and 9 PM Pacific Time
 - Stores generated numbers in a JSON file
 - Automatically commits and pushes changes to a Git repository
 - Supports manual testing and immediate number generation
@@ -35,7 +35,7 @@ To run the application:
 go run main.go
 ```
 
-This will start the scheduled number generator, which will run daily at 9 AM Pacific Time.
+This will start the scheduled number generator, which will run four times daily at 9 AM, 1 PM, 5 PM, and 9 PM Pacific Time.
 
 ## Commands and Functions
 
@@ -43,7 +43,7 @@ The project supports the following main functions:
 
 1. `StartRandomNumberGenerator()`: Starts the scheduled random number generator.
    
-```29:46:internal/random/random.go
+```go
 // StartRandomNumberGenerator initializes and starts the lottery number generator
 func StartRandomNumberGenerator() {
 	c := cron.New()
@@ -53,21 +53,28 @@ func StartRandomNumberGenerator() {
 		return
 	}
 
-	timeToRun := "CRON_TZ=America/Los_Angeles 0 9 * * *"
-	fmt.Printf("Job is scheduled to run at 9 AM every day in America/Los_Angeles timezone.\n")
+	// Define multiple run times throughout the day
+	runTimes := []string{
+		"CRON_TZ=America/Los_Angeles 0 9 * * *",  // 9 AM
+		"CRON_TZ=America/Los_Angeles 0 13 * * *", // 1 PM
+		"CRON_TZ=America/Los_Angeles 0 17 * * *", // 5 PM
+		"CRON_TZ=America/Los_Angeles 0 21 * * *", // 9 PM
+	}
 
-	c.AddFunc(timeToRun, func() {
-		generateAndCommit(location)
-	})
+	for _, timeToRun := range runTimes {
+		fmt.Printf("Job is scheduled to run at %s every day in America/Los_Angeles timezone.\n", timeToRun)
+		c.AddFunc(timeToRun, func() {
+			generateAndCommit(location)
+		})
+	}
 
 	c.Start()
 }
 ```
 
-
 2. `StartRandomNumberGeneratorNow()`: Generates numbers immediately without waiting for the schedule.
    
-```19:27:internal/random/random.go
+```go
 func StartRandomNumberGeneratorNow() {
 	location, err := time.LoadLocation("America/Los_Angeles")
 	if err != nil {
@@ -79,10 +86,9 @@ func StartRandomNumberGeneratorNow() {
 }
 ```
 
-
 3. `TestGenerateAndCommit()`: A test function to manually generate one set of numbers and commit them.
    
-```154:170:internal/random/random.go
+```go
 // testGenerateAndCommit is a manual test function for generateAndCommit
 func TestGenerateAndCommit() {
 	fmt.Println("TestGenerateAndCommit Called...")
@@ -102,11 +108,9 @@ func TestGenerateAndCommit() {
 }
 ```
 
-
 To use these functions, uncomment the relevant lines in the `main()` function:
 
-
-```10:27:main.go
+```go
 func main() {
 	// Test the random number generator right now
 	// fmt.Println("Testing the random number generator now...")
@@ -127,10 +131,9 @@ func main() {
 }
 ```
 
-
 ## Configuration
 
-- The schedule is set to run daily at 9 AM Pacific Time. You can modify this in the `StartRandomNumberGenerator()` function.
+- The schedule is set to run four times daily at 9 AM, 1 PM, 5 PM, and 9 PM Pacific Time. You can modify this in the `StartRandomNumberGenerator()` function.
 - The number of commits per run is randomly generated between 5 and 18. This can be adjusted in the `generateCount()` function.
 
 ## File Structure
