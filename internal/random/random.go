@@ -35,6 +35,10 @@ func StartRandomNumberGenerator() {
 		return
 	}
 
+	// Run immediately on startup
+	fmt.Println("Running lottery number generation on startup...")
+	generateAndCommit(location)
+
 	// Define multiple run times throughout the day
 	runTimes := []string{
 		"CRON_TZ=America/Los_Angeles 0 9 * * *",  // 9 AM
